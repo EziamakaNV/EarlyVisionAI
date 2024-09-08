@@ -1,0 +1,26 @@
+version: '3.4'
+
+services:
+  earlyvisionai:
+    image: ${DOCKER_REGISTRY-}earlyvisionai
+    build:
+      context: .
+      dockerfile: src/EarlyVisionAI/Dockerfile
+    environment:
+      ConnectionStrings__DefaultConnection: Host=database;Database=earlyvision;Username=postgres;Password=postgres
+      ConnectionStrings__HangfireConnection: Host=database;Database=earlyvision;Username=postgres;Password=postgres 
+
+  database:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: earlyvision
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+        - earlyvisiondbvolume:/var/lib/postgresql/data
+    ports:
+    
+      - "8432:5432"
+
+volumes:
+  earlyvisiondbvolume:

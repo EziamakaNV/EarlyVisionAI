@@ -1,0 +1,2 @@
+- Use extensive logging using serilog with the appropriate levels (Information, Warn Error, etc)
+- Use best practices for .NET Core
