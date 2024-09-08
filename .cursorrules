@@ -1,2 +1,4 @@
 - Use extensive logging using serilog with the appropriate levels (Information, Warn Error, etc)
 - Use best practices for .NET Core
+- the logger should be injected into the service and be the general logger for the class
+- the loggers should follow the known methods of microsoft ILogger implementation
