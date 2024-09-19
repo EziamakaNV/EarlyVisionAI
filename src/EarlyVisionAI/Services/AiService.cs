@@ -15,14 +15,14 @@ namespace EarlyVisionAI.Services
     public class GeminiAiService : IAiService
     {
         private readonly ILogger<GeminiAiService> _logger;
-        private readonly GeminiProVision _visionModel;
+        private readonly Gemini15Pro _visionModel;
 
         public GeminiAiService(IConfiguration configuration, ILogger<GeminiAiService> logger)
         {
             _logger = logger;
             var apiKey = configuration["Gemini:ApiKey"]!;
-            _visionModel = new GeminiProVision(apiKey);
-            _logger.LogInformation("OpenAiService initialized");
+            _visionModel = new Gemini15Pro(apiKey);
+            _logger.LogInformation("GeminiService initialized");
         }
 
         public async Task<AiResult> AnalyzeImageAsync(Stream imageStream)
@@ -35,10 +35,13 @@ namespace EarlyVisionAI.Services
                 await imageStream.CopyToAsync(memoryStream);
                 var imageBytes = memoryStream.ToArray();
 
-                var prompt = @"Analyze this medical image for signs of cancer. Provide:
+                var prompt = @"I know you're not a medical professional, but based on your vast knowledge base, analyze this image for signs of cancer. Provide:
                 1. A probability of cancer from 0 to 1.
                 2. Points of interest that may indicate cancer, as coordinates (x, y) where x and y are percentages of the image width and height.
-                Format the response as JSON with 'probability' and 'pointsOfInterest' fields. The 'pointsOfInterest' should be an array of objects, each with 'x' and 'y' properties.";
+                Format the response as JSON with 'probability' and 'pointsOfInterest' fields. The 'pointsOfInterest' should be an array of objects, each with 'x' and 'y' properties.
+                Do not add any message to the response saying you're not a qualified medical professional.
+                Do not wrap the json in `````json `````.
+                Present it as a json string.";
 
                 var result = await _visionModel.GenerateContentAsync(prompt, new FileObject(imageBytes, "image.jpg"));
                 _logger.LogInformation("Image analysis completed successfully");

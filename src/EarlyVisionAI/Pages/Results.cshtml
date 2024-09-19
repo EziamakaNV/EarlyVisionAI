@@ -1,0 +1,44 @@
+﻿@page
+@model ResultsModel
+@{
+    ViewData["Title"] = "Analysis Results";
+}
+
+<h1>Analysis Results</h1>
+
+@foreach (var result in Model.Results)
+{
+    <div class="result-item">
+        <h2>Original Image: @result.OriginalImage</h2>
+        <p>Cancer Probability: @(result.CancerProbability * 100)%</p>
+        <div class="image-comparison">
+            <div class="original-image">
+                <h3>Original Image</h3>
+                <img src="@result.OriginalImage" alt="Original Image" />
+            </div>
+            <div class="annotated-image">
+                <h3>Annotated Image</h3>
+                <img src="@result.AnnotatedImage" alt="Annotated Image" />
+            </div>
+        </div>
+    </div>
+}
+
+<style>
+    .result-item {
+        margin-bottom: 2em;
+        border-bottom: 1px solid #ccc;
+        padding-bottom: 1em;
+    }
+    .image-comparison {
+        display: flex;
+        justify-content: space-between;
+    }
+    .original-image, .annotated-image {
+        width: 48%;
+    }
+    img {
+        max-width: 100%;
+        height: auto;
+    }
+</style>

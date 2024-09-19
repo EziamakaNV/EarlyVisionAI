@@ -1,10 +1,67 @@
 ﻿@page
 @model IndexModel
 @{
-    ViewData["Title"] = "Home page";
+    ViewData["Title"] = "Early Vision AI - Cancer Detection";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container mt-5">
+    <h1 class="mb-4">Early Vision AI - Cancer Detection</h1>
+
+    <div class="row">
+        <div class="col-md-8">
+            <p class="lead">
+                Welcome to Early Vision AI, an advanced tool designed to assist doctors in early cancer detection for African American individuals. Our service leverages cutting-edge AI technology to analyze X-rays and skin images, identifying potential signs of cancer.
+            </p>
+            <p>
+                To get started, simply upload your medical images and provide your email address. Our AI will analyze the images and return annotated results highlighting areas of interest.
+            </p>
+        </div>
+    </div>
+
+    <form method="post" enctype="multipart/form-data" class="mt-4">
+        <div class="mb-3">
+            <label for="images" class="form-label">Upload Medical Images:</label>
+            <input type="file" class="form-control" id="images" name="Images" multiple accept="image/*" required>
+            <div class="form-text">You can upload multiple X-ray or skin images for analysis.</div>
+        </div>
+        <div class="mb-3">
+            <label for="email" class="form-label">Email Address:</label>
+            <input type="email" class="form-control" id="email" name="Email" required asp-for="Email">
+            <div class="form-text">We'll use this email to send you the analysis results.</div>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit for Analysis</button>
+    </form>
+
+    <div class="mt-5">
+        <h2>How It Works</h2>
+        <ol>
+            <li>Upload your medical images (X-rays or skin photos).</li>
+            <li>Our AI analyzes the images for potential signs of cancer.</li>
+            <li>We generate annotated images highlighting areas of interest.</li>
+            <li>You receive a detailed report with the original and annotated images, along with cancer probability scores.</li>
+        </ol>
+    </div>
+
+    <div class="mt-4">
+        <h2>Privacy and Security</h2>
+        <p>
+            We take your privacy seriously. All uploaded images and analysis results are processed securely and are not stored permanently on our servers. For more information, please read our <a href="#">Privacy Policy</a>.
+        </p>
+    </div>
 </div>
+
+@section Scripts {
+    <script>
+        // Add client-side validation if needed
+        $(document).ready(function() {
+            $('form').submit(function(event) {
+                var fileInput = $('#images');
+                var files = fileInput[0].files;
+                if (files.length === 0) {
+                    alert('Please select at least one image to upload.');
+                    event.preventDefault();
+                }
+            });
+        });
+    </script>
+}

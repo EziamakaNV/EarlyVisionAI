@@ -1,10 +1,6 @@
 using Amazon;
 using Amazon.CloudWatchLogs;
-using Amazon.S3;
-using Amazon.SimpleEmail;
 using EarlyVisionAI.Services;
-using Hangfire;
-using Hangfire.PostgreSql;
 using Microsoft.Extensions.Configuration;
 using Serilog;
 using Serilog.Events;
@@ -33,24 +29,17 @@ try
 
     // Add services to the container.
     builder.Services.AddRazorPages();
-    builder.Services.AddDefaultAWSOptions(builder.Configuration.GetAWSOptions());
-
-    builder.Services.AddAWSService<IAmazonSimpleEmailService>();
-    builder.Services.AddAWSService<IAmazonS3>();
     builder.Services.AddHttpClient();
 
-    builder.Services.AddSingleton<IJobQueue, JobQueue>();
-    builder.Services.AddSingleton<IImageProcessor, ImageProcessor>();
-    builder.Services.AddSingleton<IAiService, OpenAiService>();
-    builder.Services.AddSingleton<ICvatService, CvatService>();
-    builder.Services.AddSingleton<IPdfGenerator, PdfGenerator>();
-    builder.Services.AddSingleton<IEmailService, EmailService>();
-    builder.Services.AddSingleton<IS3Service, S3Service>();
+    builder.Services.AddSingleton<IAiService, GeminiAiService>();
+    // Register Image Annotation Service
+    builder.Services.AddScoped<IImageAnnotationService, ImageAnnotationService>();
 
-    builder.Services.AddHangfire(x => x.UsePostgreSqlStorage(x => {
-        x.UseNpgsqlConnection(builder.Configuration.GetConnectionString("HangfireConnection"));
-    }));
-    builder.Services.AddHangfireServer();
+    // Register Cloudinary settings
+    builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("Cloudinary"));
+
+    // Register Gemini settings
+    builder.Services.Configure<GeminiSettings>(builder.Configuration.GetSection("Gemini"));
 
     var app = builder.Build();
 
