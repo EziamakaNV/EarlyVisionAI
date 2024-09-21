@@ -1,15 +1,30 @@
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
 
 namespace EarlyVisionAI.Pages
 {
     public class ResultsModel : PageModel
     {
-        public List<(string OriginalImage, string AnnotatedImage, double CancerProbability)> Results { get; set; }
+        private readonly ILogger<ResultsModel> _logger;
 
-        public void OnGet(List<(string, string, double)> results)
+        [BindProperty(SupportsGet = true)]
+        public string LlmResult { get; set; }
+
+        public ResultsModel(ILogger<ResultsModel> logger)
         {
-            Results = results;
+            _logger = logger;
+        }
+
+        public void OnGet()
+        {
+            _logger.LogInformation("Displaying LLM result on Results page");
+
+            if (string.IsNullOrEmpty(LlmResult))
+            {
+                _logger.LogWarning("LLM result is empty or null");
+                LlmResult = "No result available. Please try again.";
+            }
         }
     }
 }

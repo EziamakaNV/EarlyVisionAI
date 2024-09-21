@@ -21,13 +21,8 @@
     <form method="post" enctype="multipart/form-data" class="mt-4">
         <div class="mb-3">
             <label for="images" class="form-label">Upload Medical Images:</label>
-            <input type="file" class="form-control" id="images" name="Images" multiple accept="image/*" required>
-            <div class="form-text">You can upload multiple X-ray or skin images for analysis.</div>
-        </div>
-        <div class="mb-3">
-            <label for="email" class="form-label">Email Address:</label>
-            <input type="email" class="form-control" id="email" name="Email" required asp-for="Email">
-            <div class="form-text">We'll use this email to send you the analysis results.</div>
+            <input type="file" class="form-control" id="images" name="Image" accept="image/*" required>
+            <div class="form-text">Upload a skin image for analysis.</div>
         </div>
         <button type="submit" class="btn btn-primary">Submit for Analysis</button>
     </form>
@@ -35,10 +30,9 @@
     <div class="mt-5">
         <h2>How It Works</h2>
         <ol>
-            <li>Upload your medical images (X-rays or skin photos).</li>
+            <li>Upload your skin photo.</li>
             <li>Our AI analyzes the images for potential signs of cancer.</li>
-            <li>We generate annotated images highlighting areas of interest.</li>
-            <li>You receive a detailed report with the original and annotated images, along with cancer probability scores.</li>
+            <li>You receive a detailed analysis on whether you need to seek further medical advice from a professional.</li>
         </ol>
     </div>
 

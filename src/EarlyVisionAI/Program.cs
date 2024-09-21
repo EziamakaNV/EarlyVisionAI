@@ -32,8 +32,6 @@ try
     builder.Services.AddHttpClient();
 
     builder.Services.AddSingleton<IAiService, GeminiAiService>();
-    // Register Image Annotation Service
-    builder.Services.AddScoped<IImageAnnotationService, ImageAnnotationService>();
 
     // Register Cloudinary settings
     builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("Cloudinary"));

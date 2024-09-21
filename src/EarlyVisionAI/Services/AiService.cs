@@ -8,24 +8,24 @@ namespace EarlyVisionAI.Services
     // Services/IAiService.cs
     public interface IAiService
     {
-        Task<AiResult> AnalyzeImageAsync(Stream imageStream);
+        Task<string> AnalyzeImageAsync(Stream imageStream);
     }
 
     // Services/OpenAiService.cs
     public class GeminiAiService : IAiService
     {
         private readonly ILogger<GeminiAiService> _logger;
-        private readonly Gemini15Pro _visionModel;
+        private readonly Gemini15Flash _visionModel;
 
         public GeminiAiService(IConfiguration configuration, ILogger<GeminiAiService> logger)
         {
             _logger = logger;
             var apiKey = configuration["Gemini:ApiKey"]!;
-            _visionModel = new Gemini15Pro(apiKey);
+            _visionModel = new Gemini15Flash(apiKey);
             _logger.LogInformation("GeminiService initialized");
         }
 
-        public async Task<AiResult> AnalyzeImageAsync(Stream imageStream)
+        public async Task<string> AnalyzeImageAsync(Stream imageStream)
         {
             _logger.LogInformation("Starting image analysis");
 
@@ -35,13 +35,10 @@ namespace EarlyVisionAI.Services
                 await imageStream.CopyToAsync(memoryStream);
                 var imageBytes = memoryStream.ToArray();
 
-                var prompt = @"I know you're not a medical professional, but based on your vast knowledge base, analyze this image for signs of cancer. Provide:
-                1. A probability of cancer from 0 to 1.
-                2. Points of interest that may indicate cancer, as coordinates (x, y) where x and y are percentages of the image width and height.
-                Format the response as JSON with 'probability' and 'pointsOfInterest' fields. The 'pointsOfInterest' should be an array of objects, each with 'x' and 'y' properties.
-                Do not add any message to the response saying you're not a qualified medical professional.
-                Do not wrap the json in `````json `````.
-                Present it as a json string.";
+                var prompt = @"Analyze the image provided for cancerous features. If there's a likelihood that it might be cancer,
+                inform the user to see a specialist, if not ask the user not to bother. This is not medical advice, you are
+                acting as a supplementary tool or knowledge base on if a user should see a specialist.
+                Do not add any message about you not being a medical professional.";
 
                 var result = await _visionModel.GenerateContentAsync(prompt, new FileObject(imageBytes, "image.jpg"));
                 _logger.LogInformation("Image analysis completed successfully");
@@ -49,19 +46,7 @@ namespace EarlyVisionAI.Services
                 var jsonResponse = result.Text()!;
                 _logger.LogDebug("Received JSON response: {JsonResponse}", jsonResponse);
 
-                var analysisResult = JsonSerializer.Deserialize<AnalysisResult>(jsonResponse);
-
-                if (analysisResult == null)
-                {
-                    _logger.LogError("Failed to deserialize the analysis result");
-                    throw new InvalidOperationException("Invalid response format from the AI model");
-                }
-
-                return new AiResult
-                {
-                    CancerProbability = analysisResult.Probability,
-                    PointsOfInterest = analysisResult.PointsOfInterest
-                };
+                return jsonResponse;
             }
             catch (Exception ex)
             {
@@ -69,23 +54,5 @@ namespace EarlyVisionAI.Services
                 throw;
             }
         }
-    }
-
-    public class AnalysisResult
-    {
-        public double Probability { get; set; }
-        public List<Coordinate> PointsOfInterest { get; set; } = new List<Coordinate>();
-    }
-
-    public class Coordinate
-    {
-        public double X { get; set; }
-        public double Y { get; set; }
-    }
-
-    public class AiResult
-    {
-        public double CancerProbability { get; set; }
-        public List<Coordinate> PointsOfInterest { get; set; } = new List<Coordinate>();
     }
 }
