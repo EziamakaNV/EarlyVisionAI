@@ -18,7 +18,7 @@
         </div>
     </div>
 
-    <form method="post" enctype="multipart/form-data" class="mt-4">
+    <form id="uploadForm" method="post" enctype="multipart/form-data" class="mt-4">
         <div class="mb-3">
             <label for="images" class="form-label">Upload Medical Images:</label>
             <input type="file" class="form-control" id="images" name="Image" accept="image/*" required>
@@ -44,16 +44,35 @@
     </div>
 </div>
 
+<!-- Loading Modal -->
+<div class="modal fade" id="loadingModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="loadingModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body text-center">
+                <div class="spinner-border text-primary mb-3" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <h5>Analyzing... Please wait a moment</h5>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
     <script>
-        // Add client-side validation if needed
         $(document).ready(function() {
-            $('form').submit(function(event) {
+            var loadingModal = new bootstrap.Modal(document.getElementById('loadingModal'), {
+                keyboard: false
+            });
+
+            $('#uploadForm').submit(function(event) {
                 var fileInput = $('#images');
                 var files = fileInput[0].files;
                 if (files.length === 0) {
                     alert('Please select at least one image to upload.');
                     event.preventDefault();
+                } else {
+                    loadingModal.show();
                 }
             });
         });
